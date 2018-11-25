@@ -13,3 +13,13 @@
         1 pts/0    00:00:00 sh
         5 pts/0    00:00:00 ps
 ```
+
+### limit memory usage
+
+```sh
+    dock run -ti -m 100m /bin/sh
+```
+
+### license
+
+dock is release under MIT LICENSE
