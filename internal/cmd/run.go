@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"dock/internal/container"
+	"dock/internal/subsystem"
 
 	"github.com/urfave/cli"
 )
@@ -20,11 +21,30 @@ var runCmd = cli.Command{
 			Name:  "ti",
 			Usage: "enable tty",
 		},
+		cli.StringFlag{
+			Name:  "m",
+			Usage: "memory limit",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		// fork sub process, start sub process and quit
 		initProc := container.NewParentProc(ctx.Bool("ti"), ctx.Args().Get(0))
 		if err := initProc.Start(); err != nil {
+			return err
+		}
+
+		conf := &subsystem.ResourceConfig{
+			MemoryLimit: ctx.String("m"),
+		}
+
+		cgroupManager := subsystem.NewCgroupManager("dock_cgroup")
+		defer cgroupManager.Destroy()
+
+		if err := cgroupManager.Set(conf); err != nil {
+			return err
+		}
+
+		if err := cgroupManager.Apply(initProc.Process.Pid); err != nil {
 			return err
 		}
 
