@@ -14,16 +14,10 @@ func NewParentProc(tty bool, cmd string) *exec.Cmd {
 	// setup namesapce ioslation
 	initProc.SysProcAttr = &syscall.SysProcAttr{
 		Cloneflags: syscall.CLONE_NEWUTS |
-			syscall.CLONE_NEWIPC |
 			syscall.CLONE_NEWPID |
 			syscall.CLONE_NEWNS |
-			syscall.CLONE_NEWNET,
-	}
-
-	// run as root user in container
-	initProc.SysProcAttr.Credential = &syscall.Credential{
-		Uid: 1,
-		Gid: 1,
+			syscall.CLONE_NEWNET |
+			syscall.CLONE_NEWIPC,
 	}
 
 	if tty {
