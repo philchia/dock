@@ -36,6 +36,7 @@ func NewParentProc(tty bool, cmd string) *exec.Cmd {
 	return initProc
 }
 
+// RunContainerInitProc use syscall execev to takeover init process
 func RunContainerInitProc(cmd string) error {
 
 	// MS_NOEXEC: not run other proc, MS_NOSUID: not set uid, MS_NODEV: default
