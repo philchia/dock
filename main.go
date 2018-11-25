@@ -1,7 +1,7 @@
 package main
 
 import (
-	"dock/cmd"
+	"dock/internal/cmd"
 	"log"
 	"os"
 )
