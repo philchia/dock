@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"dock/internal/container"
 	"log"
 
 	"github.com/urfave/cli"
@@ -19,6 +20,9 @@ var initCmd = cli.Command{
 
 	Action: func(ctx *cli.Context) error {
 		log.Println("init command")
+		cmd := ctx.Args().Get(0)
+
+		container.RunContainerInitProc(cmd)
 		return nil
 	},
 }
