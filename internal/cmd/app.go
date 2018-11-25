@@ -4,7 +4,11 @@ import (
 	"github.com/urfave/cli"
 )
 
-var app = cli.NewApp()
+var app = &cli.App{
+	Name:                 "dock",
+	Version:              "1.0",
+	EnableBashCompletion: true,
+}
 
 // App get global app instance
 func App() *cli.App {
