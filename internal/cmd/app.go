@@ -11,10 +11,6 @@ func App() *cli.App {
 	return app
 }
 
-func addFlags(flag cli.Flag) {
-	app.Flags = append(app.Flags, flag)
-}
-
 func addSubCommands(cmds ...cli.Command) {
 	app.Commands = append(app.Commands, cmds...)
 }

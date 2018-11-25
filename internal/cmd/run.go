@@ -2,7 +2,6 @@ package cmd
 
 import (
 	"dock/internal/container"
-	"log"
 
 	"github.com/urfave/cli"
 )
@@ -23,15 +22,15 @@ var runCmd = cli.Command{
 		},
 	},
 	Action: func(ctx *cli.Context) error {
-		log.Println("run ", ctx.Args().Get(0), "tty:", ctx.Bool("ti"))
 		// fork sub process, start sub process and quit
 		initProc := container.NewParentProc(ctx.Bool("ti"), ctx.Args().Get(0))
 		if err := initProc.Start(); err != nil {
 			return err
 		}
 
+		// TODO: wait if daemon -d not set
 		if err := initProc.Wait(); err != nil {
-			log.Println("wait:", err)
+			return err
 		}
 		return nil
 	},
