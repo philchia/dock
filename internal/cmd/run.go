@@ -25,6 +25,10 @@ var runCmd = cli.Command{
 			Name:  "m",
 			Usage: "memory limit",
 		},
+		cli.StringFlag{
+			Name:  "cpushare",
+			Usage: "cupshare limit",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		// fork sub process, start sub process and quit
@@ -35,6 +39,7 @@ var runCmd = cli.Command{
 
 		conf := &subsystem.ResourceConfig{
 			MemoryLimit: ctx.String("m"),
+			CPUShare:    ctx.String("cpushare"),
 		}
 
 		cgroupManager := subsystem.NewCgroupManager("dock_cgroup")
