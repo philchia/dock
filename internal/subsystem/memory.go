@@ -44,7 +44,6 @@ func (m *memorySubsystem) Apply(cgroup string, pid int) error {
 	}
 
 	tasksPath := path.Join(cgroupPath, "tasks")
-
 	return ioutil.WriteFile(tasksPath, []byte(strconv.Itoa(pid)), 0644)
 }
 

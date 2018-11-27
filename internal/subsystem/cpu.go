@@ -28,12 +28,23 @@ func (s *cpuSubSystem) Set(cgroup string, res *ResourceConfig) error {
 	}
 
 	if res.CPUShare != "" {
-		if err := ioutil.WriteFile(path.Join(cgroupPath, "cpu.shares"), []byte(res.CPUShare), 0644); err != nil {
+		cpuLimitPath := path.Join(cgroupPath, "cpu.shares")
+		if err := ioutil.WriteFile(cpuLimitPath, []byte(res.CPUShare), 0644); err != nil {
 			return err
 		}
 	}
 
 	return nil
+}
+
+func (s *cpuSubSystem) Apply(cgroup string, pid int) error {
+	cgroupPath, err := GetCgroupPath(s.Name(), cgroup, false)
+	if err != nil {
+		return err
+	}
+
+	tasksPath := path.Join(cgroupPath, "tasks")
+	return ioutil.WriteFile(tasksPath, []byte(strconv.Itoa(pid)), 0644)
 }
 
 func (s *cpuSubSystem) Remove(cgroup string) error {
@@ -43,17 +54,4 @@ func (s *cpuSubSystem) Remove(cgroup string) error {
 	}
 
 	return os.RemoveAll(cgroupPath)
-}
-
-func (s *cpuSubSystem) Apply(cgroup string, pid int) error {
-	cgroupPath, err := GetCgroupPath(s.Name(), cgroup, false)
-	if err != nil {
-		return err
-
-	}
-
-	if err := ioutil.WriteFile(path.Join(cgroupPath, "tasks"), []byte(strconv.Itoa(pid)), 0644); err != nil {
-		return err
-	}
-	return nil
 }
