@@ -6,7 +6,6 @@ import (
 	"os"
 	"path"
 	"strings"
-	"sync"
 )
 
 // ResourceConfig set resource limition
@@ -25,10 +24,11 @@ type Subsystem interface {
 }
 
 // mux guard systems
-var mux sync.Mutex
 var systems = map[string]Subsystem{}
 
-// RegisterSubsystem ...
+// RegisterSubsystem add a subsystem
+// NOTE: this function must only be called during initialization time (i.e. in
+// an init() function)
 func RegisterSubsystem(subsystem Subsystem) {
 	systems[subsystem.Name()] = subsystem
 }
