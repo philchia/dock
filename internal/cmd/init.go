@@ -18,9 +18,8 @@ var initCmd = cli.Command{
 	Hidden:    true,
 
 	Action: func(ctx *cli.Context) error {
-		cmd := ctx.Args().Get(0)
 		// run cmd as init process in container
-		container.RunContainerInitProc(cmd)
+		container.RunContainerInitProc()
 		return nil
 	},
 }

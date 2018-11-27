@@ -3,6 +3,8 @@ package subsystem
 import (
 	"bufio"
 	"errors"
+	"fmt"
+	"log"
 	"os"
 	"path"
 	"strings"
@@ -37,6 +39,7 @@ func RegisterSubsystem(subsystem Subsystem) {
 func FindSubsystemMountPoint(subsystem string) string {
 	f, err := os.Open("/proc/self/mountinfo")
 	if err != nil {
+		log.Println("[ERROR] open /proc/self/mountinfo:", err)
 		return ""
 	}
 	defer f.Close()
@@ -60,7 +63,7 @@ func FindSubsystemMountPoint(subsystem string) string {
 func GetCgroupPath(subsystem string, cgroup string, createIfNotExist bool) (string, error) {
 	mountPoint := FindSubsystemMountPoint(subsystem)
 	if mountPoint == "" {
-		return "", errors.New("subsystem not found")
+		return "", fmt.Errorf("subsystem not found: %s", subsystem)
 	}
 
 	cgroupPath := path.Join(mountPoint, cgroup)

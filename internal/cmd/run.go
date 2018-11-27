@@ -3,6 +3,7 @@ package cmd
 import (
 	"dock/internal/container"
 	"dock/internal/subsystem"
+	"strings"
 
 	"github.com/urfave/cli"
 )
@@ -32,10 +33,16 @@ var runCmd = cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		// fork sub process, start sub process and quit
-		initProc := container.NewParentProc(ctx.Bool("ti"), ctx.Args().Get(0))
+		initProc, w := container.NewParentProc(ctx.Bool("ti"))
 		if err := initProc.Start(); err != nil {
 			return err
 		}
+
+		// write container cmd to sub process
+		if _, err := w.WriteString(strings.Join(ctx.Args(), " ")); err != nil {
+			return err
+		}
+		w.Close()
 
 		conf := &subsystem.ResourceConfig{
 			MemoryLimit: ctx.String("m"),

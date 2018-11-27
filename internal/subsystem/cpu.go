@@ -15,6 +15,7 @@ func init() {
 }
 
 type cpuSubSystem struct {
+	path string
 }
 
 func (s *cpuSubSystem) Name() string {
@@ -27,6 +28,8 @@ func (s *cpuSubSystem) Set(cgroup string, res *ResourceConfig) error {
 		return err
 	}
 
+	s.path = cgroupPath
+
 	if res.CPUShare != "" {
 		cpuLimitPath := path.Join(cgroupPath, "cpu.shares")
 		if err := ioutil.WriteFile(cpuLimitPath, []byte(res.CPUShare), 0644); err != nil {
@@ -38,20 +41,11 @@ func (s *cpuSubSystem) Set(cgroup string, res *ResourceConfig) error {
 }
 
 func (s *cpuSubSystem) Apply(cgroup string, pid int) error {
-	cgroupPath, err := GetCgroupPath(s.Name(), cgroup, false)
-	if err != nil {
-		return err
-	}
 
-	tasksPath := path.Join(cgroupPath, "tasks")
+	tasksPath := path.Join(s.path, "tasks")
 	return ioutil.WriteFile(tasksPath, []byte(strconv.Itoa(pid)), 0644)
 }
 
 func (s *cpuSubSystem) Remove(cgroup string) error {
-	cgroupPath, err := GetCgroupPath(s.Name(), cgroup, false)
-	if err != nil {
-		return err
-	}
-
-	return os.RemoveAll(cgroupPath)
+	return os.RemoveAll(s.path)
 }
