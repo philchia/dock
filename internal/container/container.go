@@ -71,7 +71,7 @@ func RunContainerInitProc() error {
 
 	// MS_NOEXEC: not run other proc, MS_NOSUID: not set uid, MS_NODEV: default
 	mountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
-	// mount proc to enable ps to check pid
+	// mount proc fs
 	syscall.Mount("proc", "/proc", "proc", uintptr(mountFlags), "")
 
 	// syscall.Exec will takeover init process
