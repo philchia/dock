@@ -11,14 +11,19 @@ import (
 )
 
 // NewParentProc create parent init process for container
-func NewParentProc(tty bool) (*exec.Cmd, *os.File) {
+func NewParentProc(tty bool) (*exec.Cmd, *os.File, error) {
 	// fork self to run init command
-	initProc := exec.Command("/proc/self/exe", "init")
+	cmd, err := os.Readlink("/proc/self/exe")
+	if err != nil {
+		return nil, nil, err
+	}
 
 	r, w, err := os.Pipe()
 	if err != nil {
-		return nil, nil
+		return nil, nil, err
 	}
+
+	initProc := exec.Command(cmd, "init")
 
 	// setup namesapce ioslation
 	initProc.SysProcAttr = &syscall.SysProcAttr{
@@ -32,6 +37,8 @@ func NewParentProc(tty bool) (*exec.Cmd, *os.File) {
 			syscall.CLONE_NEWNET |
 			// ipc namespace
 			syscall.CLONE_NEWIPC,
+		// user namespace
+		// syscall.CLONE_NEWUSER,
 	}
 
 	// pass pipe read file to sub process
@@ -44,7 +51,7 @@ func NewParentProc(tty bool) (*exec.Cmd, *os.File) {
 		initProc.Stderr = os.Stderr
 	}
 
-	return initProc, w
+	return initProc, w, nil
 }
 
 // RunContainerInitProc use syscall execev to takeover init process
@@ -71,8 +78,10 @@ func RunContainerInitProc() error {
 
 	// MS_NOEXEC: not run other proc, MS_NOSUID: not set uid, MS_NODEV: default
 	mountFlags := syscall.MS_NOEXEC | syscall.MS_NOSUID | syscall.MS_NODEV
-	// mount proc fs
-	syscall.Mount("proc", "/proc", "proc", uintptr(mountFlags), "")
+	// mount proc
+	if err := syscall.Mount("proc", "/proc", "proc", uintptr(mountFlags), ""); err != nil {
+		log.Println("[ERROR] mount err:", err)
+	}
 
 	// syscall.Exec will takeover init process
 	if err := syscall.Exec(path, cmds, os.Environ()); err != nil {

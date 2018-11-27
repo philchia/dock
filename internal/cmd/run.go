@@ -33,7 +33,11 @@ var runCmd = cli.Command{
 	},
 	Action: func(ctx *cli.Context) error {
 		// fork sub process, start sub process and quit
-		initProc, w := container.NewParentProc(ctx.Bool("ti"))
+		initProc, w, err := container.NewParentProc(ctx.Bool("ti"))
+		if err != nil {
+			return err
+		}
+
 		if err := initProc.Start(); err != nil {
 			return err
 		}
