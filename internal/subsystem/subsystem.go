@@ -4,7 +4,6 @@ import (
 	"bufio"
 	"errors"
 	"fmt"
-	"log"
 	"os"
 	"path"
 	"strings"
@@ -25,7 +24,6 @@ type Subsystem interface {
 	Remove(path string) error
 }
 
-// mux guard systems
 var systems = map[string]Subsystem{}
 
 // RegisterSubsystem add a subsystem
@@ -39,7 +37,6 @@ func RegisterSubsystem(subsystem Subsystem) {
 func FindSubsystemMountPoint(subsystem string) string {
 	f, err := os.Open("/proc/self/mountinfo")
 	if err != nil {
-		log.Println("[ERROR] open /proc/self/mountinfo:", err)
 		return ""
 	}
 	defer f.Close()

@@ -30,10 +30,15 @@ var runCmd = cli.Command{
 			Name:  "cpushare",
 			Usage: "cupshare limit",
 		},
+		cli.StringFlag{
+			Name:  "root",
+			Usage: "root dir",
+			Value: "/",
+		},
 	},
 	Action: func(ctx *cli.Context) error {
 		// fork sub process, start sub process and quit
-		initProc, w, err := container.NewParentProc(ctx.Bool("ti"))
+		initProc, w, err := container.NewParentProc(ctx.Bool("ti"), ctx.String("root"))
 		if err != nil {
 			return err
 		}
