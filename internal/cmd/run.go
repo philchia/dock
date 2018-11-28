@@ -5,6 +5,8 @@ import (
 	"dock/internal/subsystem"
 	"strings"
 
+	"github.com/google/uuid"
+
 	"github.com/urfave/cli"
 )
 
@@ -58,7 +60,7 @@ var runCmd = cli.Command{
 			CPUShare:    ctx.String("cpushare"),
 		}
 
-		cgroupManager := subsystem.NewCgroupManager("dock_cgroup")
+		cgroupManager := subsystem.NewCgroupManager(uuid.New().String())
 		defer cgroupManager.Destroy()
 
 		if err := cgroupManager.Set(conf); err != nil {
